@@ -55,3 +55,4 @@ def l_ss(m=1, tau0 = 0.4, tau1 = 0.1, kappa = 0.4, w = 1, v = 10, eps = 0.3):
     lstar = optimize.root_scalar(lstar,method='bisect')
     return lstar
 print(l_ss)
+'''Test'''
