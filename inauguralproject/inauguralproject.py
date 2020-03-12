@@ -28,7 +28,6 @@ def c_ss(m=1, tau0 = 0.4, tau1 = 0.1, kappa = 0.4, w = 1, v = 10, eps = 0.3):
 
     #. b. call root finder
     cstar = optimize.root_scalar(cstar,method='bisect')
-    
     return cstar
 print(c_ss)
 
@@ -54,6 +53,5 @@ def l_ss(m=1, tau0 = 0.4, tau1 = 0.1, kappa = 0.4, w = 1, v = 10, eps = 0.3):
 
     #. b. call root finder
     lstar = optimize.root_scalar(lstar,method='bisect')
-    
     return lstar
 print(l_ss)
