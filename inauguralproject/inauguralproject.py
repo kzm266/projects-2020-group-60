@@ -1,10 +1,15 @@
 #God ide ved fejl: klik f8
+pip3 install numpy
+pip3 install scipy  
+pip3 install itertools
 
 #Import packages
 import numpy as np
 from scipy import optimize
 import matplotlib.pyplot as plt
 import itertools
+
+
 
 ##Question 1. 
 m = 1 #m
@@ -15,41 +20,43 @@ tau1 = 0.1 #tax_1
 kappa = 0.4 #kappa
 w = 0.5 #w set with the initial value 1
 
-#1.b Defining utility as a function of labour supplu and consumption
+#Defining utility as a function of labour supplu and consumption
 def utility(c,l,eps,v):
     u = np.argmax(np.log(c))-v*((l**(1+1/eps))/(1+1/eps))
     return u
 
-#1.c Defining the budget constraint
+#Defining the budget constraint
 def constraint(money,w,l,tax0,tax1,kappa):
     x = m+w*l-(tau0*w*l+tau1*np.max(w*l-kappa,0))
     return x
 
 from scipy import optimize
 
-#1.d Objective function which returns negative values to minimize
+#Objective function which returns negative values to minimize
 def target(l,w,eps,v,tax0,tax1,kappa):
     c = constraint(m,w,l,tau0,tau1,kappa)
     return -utility(c,l,eps,v)
 
-#1.e Call the solver using the the constraint from 1.c and the target from 1.d 
+#Call the solver using the functions: constraint and target.
 def optimiser(l,w,eps,v,tax0,tax1,kappa,m):
     solution = optimize.minimize_scalar(target, method = 'bounded',bounds=(0,1), args = (w,eps,v,tau0,tau1,kappa))
     
-#1.f Unpack optimal labour supply, return possible consumption and individual utility
+#Unpack optimal labour supply, consumption and individual utility
     lss = solution
     css = constraint(m,w,lss,tau0,tau1,kappa)
     uss = utility(lss,css,eps,v)
     return [lss,css,uss]
 
+
+
+##Question2
 import matplotlib.pyplot as plt
 plt.style.use("seaborn")
 
-##Question2
-#2.a Set number of observations
+#Set number of observations.
 N=10000
 
-#2.b Generate vectors of optimal labour supply and feasible consumption given wage.
+#Generate vectors of optimal labour supply and consumption given wages.
 w_vec=np.linspace(0.5,1.5,N)
 l_vec=np.empty(N)
 c_vec=np.empty(N)
@@ -60,10 +67,10 @@ for i,w in enumerate(w_vec):
     l_vec[i]=lc_bundle[0]
     c_vec[i]=lc_bundle[1]
 
-#2.c Create the figure
+#Create figure
 fig = plt.figure(figsize=(10,4))
 
-#2.d Left plot: labour supply
+#Left side plot: Labour supply.
 ax_left = fig.add_subplot(1,2,1)
 ax_left.plot(w_vec,l_vec)
 
@@ -72,7 +79,7 @@ ax_left.set_xlabel('$w$')
 ax_left.set_ylabel('$l^\star$')
 ax_left.grid(True)
 
-#2.e right plot: feasible consumption
+#Right side plot: Consumption.
 ax_right = fig.add_subplot(1,2,2)
 ax_right.plot(w_vec,c_vec)
 
@@ -83,5 +90,5 @@ ax_right.grid(True)
 
 ##Question3
 def taxrev(c,l,eps,v):
-    T = sum(tau0*w_vec*lss_vec+tau1*
-    return T
+    T = sum(tau0*w_vec*lss_vec+tau1)
+    return T 
