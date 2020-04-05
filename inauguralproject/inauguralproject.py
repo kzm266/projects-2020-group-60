@@ -21,7 +21,8 @@ def u_func(c,l,eps,v):
 
 #Defining function for consumption, where c*=x because of monoticity seen from eq(2).
 def c_func(l,w,m,tau0,tau1,kappa):
-    return m+w*l-(tau0*w*l+tau1*np.max(w*l-kappa,0))
+    c_def = m+w*l-(tau0*w*l+tau1*np.max([w*l-kappa,0]))
+    return c_def
 
 #Defining the utility constraint such that c=c_func.
 def u_con(l,w,eps,v,tau0,tau1,kappa):
@@ -31,6 +32,7 @@ def u_con(l,w,eps,v,tau0,tau1,kappa):
 #Defining a function for the solution of the utility maximization problem. 
 def sol(w,eps,v,tau0,tau1,kappa,m):
     l_sol=optimize.minimize_scalar(u_con, method = 'bounded',bounds = (0,1), args = (w,eps,v,tau0,tau1,kappa))
+    #Defining the optimal 
     l_ss = l_sol.x
     c_ss = c_func(m,w,l_ss,tau0,tau1,kappa)
     u_ss = u_func(l_ss,c_ss,eps,v)
@@ -125,5 +127,54 @@ print(tax_rev(l_opt_new))
 
 
 
+
 ###Question5
 #We worn't sure of how to tackle this question. 
+eps=0.3
+
+
+
+kappa_new = np.linspace(0,1.5,5)
+tau0_new = np.linspace(0,1,5)
+tau1_new = np.linspace(0,1,5)
+
+print('Kappa', kappa_new)
+print('Tau0', tau0_new)
+print('Tau1', tau1_new)
+
+
+
+def total_tax_rev(tau0,tau1,kappa,w_uni,eps,v,m):
+    l_list = np.empty(10000)
+    for s,wa in enumerate(w_uni):
+        opt_list=sol(wa,eps,v,tau0,tau1,kappa,m)
+        l_list[s]=opt_list[0]
+    return tax_rev(l_list)
+
+
+
+    #Create a guess for the best value of each parameter and total tax revenue.
+kappa_opt = 0
+tau0_opt = 0
+tau1_opt = 0
+rev_opt = 0
+
+#Begin loop that creats varius permutations of the selected parameter values. 
+for i in kappa_new:
+    for j in tau0_new:
+        for m in tau1_new:
+            tau0 = j
+            tau1 = m
+            kappa = i
+            rev = total_tax_rev(tau0,tau1,kappa,w_uni,eps,v,m)
+            if rev > rev_opt: # If the combination of parameters gives higher total tax revenue than best_rev,
+                               # then the best guesses for parameter values are updated:
+                rev_opt = rev
+                kappa_opt = kappa
+                tau0_opt = tau0
+                tau1_opt = tau1
+# Now printing the results:
+print('Optimal value of kappa', kappa_opt)
+print('Optimal value of tau0', tau0_opt)
+print('Optimal value of tau1', tau1_opt)
+print('Optimal value of tax rev', rev_opt)
