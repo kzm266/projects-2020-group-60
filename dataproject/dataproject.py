@@ -10,7 +10,6 @@ import pydst # install in (2).
 import matplotlib.pyplot as plt
 
 #DATACLEANING#
-
 #We use pydst to use an API to Denmark's statistics
 Dst = pydst.Dst(lang='en')
 Dst.get_subjects() #Used to see list of different datasets. 
