@@ -27,7 +27,7 @@ Vars.values
 Data = Dst.get_data(table_id = 'MPK49', variables={'AKTPAS':['5180','5190','5200'], 'TID':['2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016',], 'TYPE':['*']})
 Data.rename(columns={'AKTPAS':'Assets & Liabilities','TID':'Year','TYPE':'Type','INDHOLD':'Amount'},inplace=True)
 
-Index = Data.set_index('Year')
+Index = Data.set_index('Type')
 Sort = Index[['Type','Assets & Liabilities','Amount']]
 
 Working = Sort[Sort['Assets & Liabilities']=='Number of working members'].sort_values(['Year','Type']).rename(columns={'Assets & Liabilities':'Currently working', 'Amount':'Average pension funds for currently working'})
@@ -53,7 +53,7 @@ Final_table
 
 #We now wish to create a individual table for each province, and do it like this:
 #We start by finding the unique values in the table AKA all the provinces
-unik = Final_table.unique()
+unik = Final_table.Index.unique()
 
 #Making an empty dictionary which will contain our unique values with their seperate table later
 d = {}
