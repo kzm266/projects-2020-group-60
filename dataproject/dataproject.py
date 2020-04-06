@@ -3,7 +3,7 @@
 #(2): pip install git+https://github.com/elben10/pydst
 
 #Importing used packages.
-import numpy as np
+import numpy as n
 import pandas as pd
 import pandas_datareader # install in (1).
 import pydst # install in (2).
