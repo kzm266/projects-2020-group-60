@@ -51,3 +51,27 @@ Final_table['Difference in pension sum (Pct)'] = ((Final_table['Average pension 
 Final_table
 
 
+#We now wish to create a individual table for each province, and do it like this:
+#We start by finding the unique values in the table AKA all the provinces
+unik = Final_table.unique()
+
+#Making an empty dictionary which will contain our unique values with their seperate table later
+d = {}
+
+#Filling the empty dictionary
+for i in unik:
+    d.update( {i : Final_table.loc[i]})
+
+
+#We can now plot the difference between men and women in a graph like this:
+def Difference(Gruppe):
+    #Simply plotting the difference against years to see the evolution
+    plt.plot(d[Gruppe]['Type'],d[Gruppe]['Difference in pension sum (Pct)'])
+    plt.xlabel('Type')
+    plt.ylabel('Difference in pension sum (Pct)')
+    plt.title('Test')
+    plt.axis([2000,2016],0,100000)
+    plt.grid(True)
+    return plt.show()
+
+
