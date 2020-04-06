@@ -10,61 +10,70 @@ import pydst # install in (2).
 import datetime
 import matplotlib.pyplot as plt
 
-#DATACLEANING#
 
-#We use pydst to use an API to Denmark's statistics
+
+###Datacleaning###
+#We use the Python module pydst for assesing the API of Denmark's statistics.
 Dst = pydst.Dst(lang='en')
-Dst.get_subjects() #Used to see list of different datasets. 
-tables = Dst.get_tables(subjects=['16']) #We choose the main dataset for "Money and credit markets".
-tables[tables.id == 'MPK49'] #We choose the subdataset for "Pension funds".
-vars = Dst.get_variables(table_id='MPK49')
 
-#To find the variables we need, we inspect the table that we have imported:
+#This data is organized into Tables and Subjects indexed by numbers so we use the following to see the list.
+Dst.get_subjects()
+
+#We choose the main dataset for "Money and credit markets" with subject=16 seen below.
+tables = Dst.get_tables(subjects=['16']) 
+
+#Then we choose the subdataset for "Pension funds" with id=MPK49 that is shown below.
+tables[tables.id == 'MPK49'] 
+
+#Further we can examine the variables in more deepth. 
+vars = Dst.get_variables(table_id = 'MPK49')
 vars.values
 
-
-#Analyze each variable and look at all given information in the dataset. 
-#vars = Dst.get_variables(table_id='MPK49')
-#for id in ['AKTPAS','TID','TYPE','INDHOLD']:
-#    print(id)
-#    values = vars.loc[vars.id == id,['values']].values[0,0]
-#    for value in values:      
-#        print(f' id = {value["id"]}, text = {value["text"]}')
-
-
-#After picking out values, we can get our data:
+#Now we are retrieving data from the above mentioned subject and subset we creat an unsorted table. 
 Data = Dst.get_data(table_id = 'MPK49', variables={'AKTPAS':['5180','5190','5200'], 'TID':['2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016',], 'TYPE':['*']})
+#Rename the variables of the dataset.
 Data.rename(columns={'AKTPAS':'Assets & Liabilities','TID':'Year','TYPE':'Type','INDHOLD':'Amount'},inplace=True)
 
+#Change the index of the table to the variables 'Year' for now. 
 Index = Data.set_index('Year')
+#Sort the dataset to get a more clear order in the dataset. 
 Sort = Index[['Type','Assets & Liabilities','Amount']] 
 
+#Now we are creating two datasets from the before mentioned table ('Data') where we sort the data tables for working and retired members. 
 Working = Sort[Sort['Assets & Liabilities']=='Number of working members'].sort_values(['Year','Type']).rename(columns={'Assets & Liabilities':'Currently working', 'Amount':'Pension funds for currently working'})
 Retired = Sort[Sort['Assets & Liabilities']=='Number of retired members'].sort_values(['Year','Type']).rename(columns={'Assets & Liabilities':'Currently retired', 'Amount':'Pension funds for currently retired'})
 
+#Thereto we remove the variables 'Year' and 'Type' because when we merge the tables later we dont want duplications of these variables. 
 Retired_notype_noyear = Retired[['Currently retired', 'Pension funds for currently retired']]
 
-#Concatenate the two tables:
-Concatenated_table = pd.concat([Working, Retired_notype_noyear], axis=1)
+#Merging the two tables for working and retired members together. 
+Merge = pd.concat([Working, Retired_notype_noyear], axis=1)
 
-#Removing the gender nicer look.
-Final_table = Concatenated_table[['Type','Pension funds for currently working','Pension funds for currently retired']]
-Final_table = Final_table.dropna(axis=0)
+#Combining the necessary variables and tables into one.
+Reduced = Merge[['Type','Pension funds for currently working','Pension funds for currently retired']]
+#Removing data where values are missing or isnt existing altogether. 
+Reduced = Reduced.dropna(axis=0)
 
-Final_table['Gap in pension sum'] = Final_table['Pension funds for currently working'].astype(float) - Final_table['Pension funds for currently retired'].astype(float)
-Final_table['Difference in pension sum (Pct)'] = ((Final_table['Pension funds for currently working'].astype(float)/Final_table['Pension funds for currently retired'].astype(float))-1)*100
-Final_table.reset_index(inplace = True)
+#Adding collums with results of different calculations. 
+Reduced['Gap in pension sum'] = Reduced['Pension funds for currently working'].astype(float) - Reduced['Pension funds for currently retired'].astype(float)
+Reduced['Difference in pension sum (Pct)'] = ((Reduced['Pension funds for currently working'].astype(float)/Reduced['Pension funds for currently retired'].astype(float))-1)*100
 
-Corporate = Final_table['Type'] == "Corporate pension funds"
-Complete = Final_table[[Corporate,'Pension funds for currently working','Pension funds for currently retired']]
+#Reseting index for the dataset.
+Reduced.reset_index(inplace = True)
 
-
-
-#Final_table(Final_table['Type']=='Intersectoral pension funds')
-
-
+#Only keeping data for corporate pension funds as we want a more reduced final dataset.
+Complete = Reduced[Reduced['Type'] == "Corporate pension funds"]
 
 
+
+###Graph###
+#Creating function to creat graphs of our collums. 
+def Graph(yaxs):
+    Complete.plot(x='Year', y=yaxs ,style='-o')
+    plt.xlabel('Year')
+    plt.ylabel(yaxs)
+    plt.grid(True)
+    return plt.show()
 
 
 
