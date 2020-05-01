@@ -40,23 +40,23 @@ Index = Data.set_index('Year')
 Sort = Index[['Type','Assets & Liabilities','Amount']] 
 
 #Now we are creating two datasets from the before mentioned table ('Data') where we sort the data tables for working and retired members. 
-Working = Sort[Sort['Assets & Liabilities']=='Number of working members'].sort_values(['Year','Type']).rename(columns={'Assets & Liabilities':'Currently working', 'Amount':'Pension funds for currently working'})
-Retired = Sort[Sort['Assets & Liabilities']=='Number of retired members'].sort_values(['Year','Type']).rename(columns={'Assets & Liabilities':'Currently retired', 'Amount':'Pension funds for currently retired'})
+Working = Sort[Sort['Assets & Liabilities']=='Number of working members'].sort_values(['Year','Type']).rename(columns={'Assets & Liabilities':'Currently working', 'Amount':'Currently working members'})
+Retired = Sort[Sort['Assets & Liabilities']=='Number of retired members'].sort_values(['Year','Type']).rename(columns={'Assets & Liabilities':'Currently retired', 'Amount':'Currently retired members'})
 
 #Thereto we remove the variables 'Year' and 'Type' because when we merge the tables later we dont want duplications of these variables. 
-Retired_notype_noyear = Retired[['Currently retired', 'Pension funds for currently retired']]
+Retired_notype_noyear = Retired[['Currently retired', 'Currently retired members']]
 
 #Merging the two tables for working and retired members together. 
 Merge = pd.concat([Working, Retired_notype_noyear], axis=1)
 
 #Combining the necessary variables and tables into one.
-Reduced = Merge[['Type','Pension funds for currently working','Pension funds for currently retired']]
+Reduced = Merge[['Type','Currently working members','Currently retired members']]
 #Removing data where values are missing or isnt existing altogether. 
 Reduced = Reduced.dropna(axis=0)
 
 #Adding collums with results of different calculations. 
-Reduced['Gap in pension sum'] = Reduced['Pension funds for currently working'].astype(float) - Reduced['Pension funds for currently retired'].astype(float)
-Reduced['Difference in pension sum (Pct)'] = ((Reduced['Pension funds for currently working'].astype(float)/Reduced['Pension funds for currently retired'].astype(float))-1)*100
+Reduced['Gap in pension sum'] = Reduced['Currently working members'].astype(float) - Reduced['Currently retired members'].astype(float)
+Reduced['Difference in pension sum (Pct)'] = ((Reduced['Currently working members'].astype(float)/Reduced['Currently retired members'].astype(float))-1)*100
 
 #Reseting index for the dataset.
 Reduced.reset_index(inplace = True)
