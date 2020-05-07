@@ -12,22 +12,29 @@ import matplotlib.pyplot as plt
 
 ###Datacleaning###
 
-##Table[1]##
+
+##General##
+
 #We use the Python module pydst for assesing the API of Denmark's statistics.
 Dst = pydst.Dst(lang='en')
 
 #This data is organized into Tables and Subjects indexed by numbers so we use the following to see the list.
-Dst.get_subjects()
+Overview=Dst.get_subjects()
 
 #We choose the main dataset for "Money and credit markets" with subject=16 seen below.
-tables = Dst.get_tables(subjects=['16']) 
+Theme=Dst.get_tables(subjects=['16']) 
 
+
+
+
+
+##Table[1]##
 #Then we choose the subdataset for "Pension funds" with id=MPK49 that is shown below.
-tables[tables.id == 'MPK49'] 
+Subject_1=Theme[Theme.id == 'MPK49'] 
 
 #Further we can examine the variables in more deepth. 
-vars_1 = Dst.get_variables(table_id = 'MPK49')
-vars_1.values
+Vars_1 = Dst.get_variables(table_id = 'MPK49')
+Vars_1.values
 
 #Now we are retrieving data from the above mentioned subject and subset we creat an unsorted table. 
 Data_1 = Dst.get_data(table_id = 'MPK49', variables={'AKTPAS':['5320'], 'TID':['2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016',], 'TYPE':['5410', '5420']})
@@ -46,7 +53,7 @@ Corp_Reduc = Corp.drop('Type',axis=1)
 
 Intersectoral = Sort[Sort['Type']=='Intersectoral pension funds '].sort_values(['Year','Type'])
 Inter = pd.DataFrame(Intersectoral).rename(columns={'Amount': 'Intersectoral pension funds in mio kr.'})
-Inter_Reduc = Ínter.drop('Type', axis=1)
+Inter_Reduc = Inter.drop('Type', axis=1)
 
 
 #We merge the two datasets into one collective table. 
@@ -63,12 +70,12 @@ Pen_Reduc = Pension.drop('Assets & Liabilities', axis =1)
 
 
 ##Table[2]##
-tables[tables.id == 'MPK13'] 
+Subject_2=Theme[Theme.id == 'MPK13'] 
 
 
 #we want to insepect the correlation between the share index and pension funds, we finde the share index in the data base. 
-vars_2 = Dst.get_variables(table_id = 'MPK13')
-vars_2.values
+Vars_2 = Dst.get_variables(table_id = 'MPK13')
+Vars_2.values
 
 
 # We will be using the OMXC share index with index = 1995, wich is calculated on a monthly basis.   
@@ -81,11 +88,6 @@ Data_2.rename(columns={'TYPE':'Type','TID':'Time','INDHOLD':'Share Index'},inpla
 
 
 Index_2 = Data_2.set_index('Time')
-
-#Look at the variables of the shared index dataset.
-vars_2 = Dst.get_variables(table_id = 'MPK13')
-vars_2.values
-
 
 
 Shared_Index = pd.DataFrame(Index_2)
@@ -118,7 +120,7 @@ Shared_Index['Share Index'].iloc[192:204]
 
 
 
-Share_Frame = pd.DataFrame({'Yearly average share_index': [Year_2000, Year_2001, Year_2002, Year_2003, Year_2004, Year_2005,
+Shared_Frame = pd.DataFrame({'Yearly average share_index': [Year_2000, Year_2001, Year_2002, Year_2003, Year_2004, Year_2005,
                             Year_2006, Year_2007, Year_2008, Year_2009, Year_2010, Year_2011, Year_2012 , Year_2013, Year_2014, Year_2015, Year_2016]
                             , 'Year': [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016]})
 Shared_Frame
