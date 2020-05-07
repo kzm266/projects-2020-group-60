@@ -27,7 +27,6 @@ Theme=Dst.get_tables(subjects=['16'])
 
 
 
-
 ##Table[1]##
 #Then we choose the subdataset for "Pension funds" with id=MPK49 that is shown below.
 Subject_1=Theme[Theme.id == 'MPK49'] 
@@ -84,12 +83,7 @@ Data_2 = Dst.get_data(table_id = 'MPK13', variables={'Type':['10'], 'TID':['*']}
 #Rename the variables of the dataset.
 Data_2.rename(columns={'TYPE':'Type','TID':'Time','INDHOLD':'Share Index'},inplace=True)
 
-
-
-
 Index_2 = Data_2.set_index('Time')
-
-
 Shared_Index = pd.DataFrame(Index_2)
 
 # Dropping all variables out of range 2000M01-2016M12
@@ -116,58 +110,39 @@ Year_2016 = Shared_Index['Share Index'].iloc[192:204].mean(axis=0)
 
 Shared_Index['Share Index'].iloc[192:204]
 
-
-
-
-
 Shared_Frame = pd.DataFrame({'Yearly average share_index': [Year_2000, Year_2001, Year_2002, Year_2003, Year_2004, Year_2005,
                             Year_2006, Year_2007, Year_2008, Year_2009, Year_2010, Year_2011, Year_2012 , Year_2013, Year_2014, Year_2015, Year_2016]
                             , 'Year': [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016]})
-Shared_Frame
-
-
-
 
 Shared_Frame_Reduc = Shared_Frame.set_index('Year')
-Shared_Frame_Reduc
 
 
-# Merging the to dataframes. 
+
+
+
+
+
+
+
+
+
+
+##Merging of Table[1] & Table[2]##
+#Merging the to dataframes. 
 Collective = pd.concat([Pension, Shared_Frame_Reduc], axis=1)
-
 np.corrcoef(Collective['Intersectoral pension funds in mio kr.'], Collective['Yearly average share_index'])
 np.corrcoef(Collective['Corporate pension funds in mio kr.'], Collective['Yearly average share_index'])
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #resseting Index for graphical analysis.
 Collective.reset_index(inplace = True)
-
-
-
 Collective_Year = Collective['Year']
 Collective_IP = Collective['Intersectoral pension funds in mio kr.']
 Collective_CP = Collective['Corporate pension funds in mio kr.']
 Collective_SI = Collective['Yearly average share_index']
 
 #Creating Figure with 2 y-axis to compare pension funds and yearly share index.
-fig,ax = plt.subplots()
+fig1,ax = plt.subplots()
 ax.plot(Collective_Year, Collective_IP, color='red', marker='o')
 ax.set_xlabel('Year')
 ax.set_ylabel('Intersectoral pension funds in mio kr.', color='red')
@@ -178,13 +153,9 @@ ax2.plot(Collective_Year, Collective_SI, color = 'blue', marker='o')
 ax2.set_ylabel('Yearly average share_index', color='blue')
 plt.show()
 
-
-
-
-
-# Now creating a figure with corporate pension funds, and share_index.
+#Now creating a figure with corporate pension funds, and share_index.
 #Creating Figure with 2 y-axis to compare pension funds and yearly share index.
-fig,ax = plt.subplots()
+fig2,ax = plt.subplots()
 ax.plot(Collective_Year, Collective_CP, color='red', marker='o')
 ax.set_xlabel('Year')
 ax.set_ylabel('Corporate pension funds in mio kr.', color='red')
